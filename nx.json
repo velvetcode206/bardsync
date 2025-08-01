@@ -21,5 +21,13 @@
     "test": {
       "cache": true
     }
+  },
+  "namedInputs": {
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml"
+    ],
+    "default": [
+      "sharedGlobals"
+    ]
   }
 }

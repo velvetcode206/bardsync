@@ -1,0 +1,53 @@
+name: Continuous Integration Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+      - development
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  node-lint-test-build:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest]
+        pnpm-version: [10.13.1]
+        node-version: [22.17.0]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - name: Checkout code into runner
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ matrix.pnpm-version }}
+
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Set affected SHAs
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Lint affected packages
+        run: pnpm exec nx affected -t lint
+
+      - name: Test affected packages
+        run: pnpm exec nx affected -t test
+
+      - name: Build affected packages
+        run: pnpm exec nx affected -t build

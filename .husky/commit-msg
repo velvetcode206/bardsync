@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# 1. Check if the commit is signed (GPG or SSH)
+if ! git log -1 --pretty=%G? | grep -qE 'G|U'; then
+  echo "❌ Commit is not signed! Please sign your commit using GPG or SSH."
+  exit 1
+fi
+
+# 2. Run Commitlint
+npx --no -- commitlint --edit "$1"

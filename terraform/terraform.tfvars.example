@@ -1,0 +1,5 @@
+gcp_project_id       = "<PROJECT_ID>"
+gcp_region           = "<PROJECT_REGION>"
+gcp_zone             = "<PROJECT_REGION>"
+gcp_gke_node_sa_id   = "<PROJECT_REGION>"
+gcp_gke_node_sa_name = "<PROJECT_REGION>"

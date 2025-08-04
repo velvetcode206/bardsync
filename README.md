@@ -67,6 +67,8 @@ It’s designed to create a shared audio experience, making it easy for groups t
 
 - [![github][github-shield]][github-url]
 - [![github-actions][github-actions-shield]][github-actions-url]
+- [![terraform][terraform-shield]][terraform-url]
+- [![gcp][gcp-shield]][gcp-url]
 - [![nx][nx-shield]][nx-url]
 - [![node][node-shield]][node-url]
 - [![pnpm][pnpm-shield]][pnpm-url]
@@ -225,5 +227,9 @@ Distributed under the GNU General Public License v3.0. See [LICENSE][license-url
 [node-url]: https://pnpm.io/installation/
 [pnpm-shield]: https://img.shields.io/badge/pnpm-node%20package%20manager-000000?style=for-the-badge&logo=pnpm&logoColor=ffffff&labelColor=f69220
 [pnpm-url]: https://pnpm.io/installation/
+[terraform-shield]: https://img.shields.io/badge/terraform-infrastructure%20as%20code-000000?style=for-the-badge&logo=terraform&logoColor=ffffff&labelColor=844FBA
+[terraform-url]: https://developer.hashicorp.com/terraform
+[gcp-shield]: https://img.shields.io/badge/google%20cloud-cloud%20provider-000000?style=for-the-badge&logo=googlecloud&logoColor=ffffff&labelColor=4285F4
+[gcp-url]: https://cloud.google.com/
 [choose-a-license-url]: https://choosealicense.com
 [shields-url]: https://shields.io

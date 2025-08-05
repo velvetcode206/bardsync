@@ -1,14 +1,3 @@
-resource "google_service_account" "gke_nodes" {
-  account_id   = var.gcp_gke_node_sa_id
-  display_name = var.gcp_gke_node_sa_name
-}
-
-resource "google_project_iam_member" "gke_node_sa_roles" {
-  project = var.gcp_project_id
-  role    = "roles/container.defaultNodeServiceAccount"
-  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
-}
-
 resource "google_container_cluster" "primary" {
   name       = "${var.gcp_project_id}-cluster"
   location   = var.gcp_zone
@@ -20,6 +9,10 @@ resource "google_container_cluster" "primary" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  workload_identity_config {
+    workload_pool = "${var.gcp_project_id}.svc.id.goog"
+  }
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
@@ -34,12 +27,14 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 
   node_config {
     spot = true
-    machine_type = "e2-micro"
+    machine_type = "e2-medium"
     disk_type    = "pd-standard"
-    disk_size_gb = 10
+    disk_size_gb = 20
+    service_account = google_service_account.gke_node.email
 
-    oauth_scopes = [ 
-      "https://www.googleapis.com/auth/cloud-platform"
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write"
     ]
 
     metadata = {

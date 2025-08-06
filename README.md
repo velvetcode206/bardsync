@@ -72,6 +72,7 @@ It’s designed to create a shared audio experience, making it easy for groups t
 - [![nx][nx-shield]][nx-url]
 - [![node][node-shield]][node-url]
 - [![pnpm][pnpm-shield]][pnpm-url]
+- [![nuxt][nuxt-shield]][nuxt-url]
 
 <p align="right"><a href="#readme-top">⬆ back to top</a></p>
 
@@ -231,5 +232,7 @@ Distributed under the GNU General Public License v3.0. See [LICENSE][license-url
 [terraform-url]: https://developer.hashicorp.com/terraform
 [gcp-shield]: https://img.shields.io/badge/google%20cloud-cloud%20provider-000000?style=for-the-badge&logo=googlecloud&logoColor=ffffff&labelColor=4285F4
 [gcp-url]: https://cloud.google.com/
+[nuxt-shield]: https://img.shields.io/badge/nuxt4-web%20framework-000000?style=for-the-badge&logo=nuxt&logoColor=ffffff&labelColor=00DC82
+[nuxt-url]: https://nuxt.com/
 [choose-a-license-url]: https://choosealicense.com
 [shields-url]: https://shields.io

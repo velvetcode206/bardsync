@@ -1,0 +1,22 @@
+{
+  "name": "@bardsync/client",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "start": "node .output/server/index.mjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@nuxt/eslint": "^1.7.1",
+    "eslint": "^9.32.0",
+    "nuxt": "^4.0.1",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
+  }
+}

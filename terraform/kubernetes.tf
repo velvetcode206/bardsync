@@ -1,8 +1,8 @@
 resource "google_container_cluster" "primary" {
-  name       = "${var.gcp_project_id}-cluster"
+  name       = var.gcp_gke_cluster_name
   location   = var.gcp_zone
-  network    = google_compute_network.vpc.name
-  subnetwork = google_compute_subnetwork.subnet.name
+  network    = google_compute_network.primary.name
+  subnetwork = google_compute_subnetwork.primary.name
   
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -16,7 +16,7 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
-  name       = "${var.gcp_project_id}-node-pool"
+  name       = var.gcp_gke_node_pool_name
   location   = var.gcp_zone
   cluster    = google_container_cluster.primary.name
 
@@ -30,7 +30,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     machine_type = "e2-medium"
     disk_type    = "pd-standard"
     disk_size_gb = 20
-    service_account = google_service_account.gke_node.email
+    service_account = google_service_account.gke_nodes.email
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",

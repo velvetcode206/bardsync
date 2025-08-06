@@ -1,3 +1,16 @@
+# REPOSITORY
+variable "repository_path" {
+  type        = string
+  nullable    = false
+}
+
+# GCP PROJECT
+
+variable "gcp_project_number" {
+  type        = string
+  nullable    = false
+}
+
 variable "gcp_project_id" {
   type        = string
   nullable    = false
@@ -13,42 +26,103 @@ variable "gcp_zone" {
   nullable    = false
 }
 
-variable "gcp_gke_node_sa_id" {
+# NETWORKING
+
+variable "gcp_network_primary_name" {
   type        = string
   nullable    = false
 }
 
-variable "gcp_gke_node_sa_name" {
+variable "gcp_subnet_primary_name" {
   type        = string
   nullable    = false
 }
 
-variable "gcp_gke_node_pod_sa_id" {
+variable "gcp_subnet_primary_range" {
   type        = string
   nullable    = false
 }
 
-variable "gcp_gke_node_pod_sa_name" {
+
+# ARTIFACT REGISTRY
+
+variable "gcp_artifact_repo_client_id" {
   type        = string
   nullable    = false
 }
 
-variable "gcp_ksa_sa_name" {
+variable "gcp_artifact_repo_client_description" {
   type        = string
   nullable    = false
 }
 
-variable "ksa_namespace_production" {
+variable "gcp_artifact_repo_client_format" {
   type        = string
   nullable    = false
 }
 
-variable "ksa_namespace_development" {
+# KUBERNETES
+
+variable "gcp_gke_cluster_name" {
   type        = string
   nullable    = false
 }
 
-variable "gcp_artifact_repo_client" {
+variable "gcp_gke_node_pool_name" {
+  type        = string
+  nullable    = false
+}
+
+variable "ksa_namespace_prd" {
+  type        = string
+  nullable    = false
+}
+
+variable "ksa_namespace_dev" {
+  type        = string
+  nullable    = false
+}
+
+# SERVICE ACCOUNTS
+
+variable "gcp_sa_gke_nodes_id" {
+  type        = string
+  nullable    = false
+}
+
+variable "gcp_sa_gke_nodes_name" {
+  type        = string
+  nullable    = false
+}
+
+variable "gcp_sa_gke_node_pods_id" {
+  type        = string
+  nullable    = false
+}
+
+variable "gcp_sa_gke_node_pods_name" {
+  type        = string
+  nullable    = false
+}
+
+variable "gcp_sa_github_actions_id" {
+  type        = string
+  nullable    = false
+}
+
+variable "gcp_sa_github_actions_name" {
+  type        = string
+  nullable    = false
+}
+
+variable "gcp_sa_ksa_name" {
+  type        = string
+  nullable    = false
+}
+
+# WORKLOAD IDENTITY
+
+variable "gcp_identy_pool_github_actions_id" {
   type        = string
   nullable    = false
 }

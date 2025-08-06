@@ -1,11 +1,36 @@
-gcp_project_id            = "<PROJECT_ID>"
-gcp_region                = "<PROJECT_REGION>"
-gcp_zone                  = "<PROJECT_ZONE>"
-gcp_gke_node_sa_id        = "gke-node-sa"
-gcp_gke_node_sa_name      = "GKE Node Service Account"
-gcp_gke_node_pod_sa_id    = "gke-node-pod-sa"
-gcp_gke_node_pod_sa_name  = "GKE Node Pod Service Account"
-gcp_ksa_sa_name           = "gcp-ksa-sa"
-ksa_namespace_production  = "production"
-ksa_namespace_development = "development"
-gcp_artifact_repo_client  = "client"
+# REPOSITORY
+repository_path = "<REPOSITORY_PATH>"
+
+# GCP PROJECT
+gcp_project_number = "<PROJECT_NUMBER>"
+gcp_project_id     = "<PROJECT_ID>"
+gcp_region         = "<PROJECT_REGION>"
+gcp_zone           = "<PROJECT_ZONE>"
+
+# NETWORKING
+gcp_network_primary_name = "network-primary"
+gcp_subnet_primary_name  = "subnet-primary"
+gcp_subnet_primary_range = "10.10.0.0/24"
+
+# ARTIFACT REGISTRY
+gcp_artifact_repo_client_id          = "client"
+gcp_artifact_repo_client_description = "Image repository for the client app"
+gcp_artifact_repo_client_format      = "DOCKER"
+
+# KUBERNETES
+gcp_gke_cluster_name   = "cluster-primary"
+gcp_gke_node_pool_name = "node-pool-primary"
+ksa_namespace_prd      = "prd"
+ksa_namespace_dev      = "dev"
+
+# SERVICE ACCOUNTS
+gcp_sa_gke_nodes_id        = "sa-gke-nodes"
+gcp_sa_gke_nodes_name      = "Service Account for GKE Nodes"
+gcp_sa_gke_node_pods_id    = "sa-gke-node-pods"
+gcp_sa_gke_node_pods_name  = "Service Account for GKE Node Pods"
+gcp_sa_github_actions_id   = "sa-github-actions"
+gcp_sa_github_actions_name = "Service Account for Github Actions"
+gcp_sa_ksa_name            = "sa-gcp-ksa"
+
+# WORKLOAD IDENTITY
+gcp_identy_pool_github_actions_id = "github-actions"

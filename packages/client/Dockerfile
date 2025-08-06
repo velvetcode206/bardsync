@@ -7,7 +7,7 @@ RUN corepack enable
 COPY . /app
 WORKDIR /app
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter @bardsync/client --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
 EXPOSE 3000
-CMD ["pnpm", "exec", "nx", "run", "@bardsync/client:start"]
+CMD ["pnpm", "run", "start"]

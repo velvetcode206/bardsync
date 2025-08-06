@@ -7,7 +7,7 @@ on:
       - development
 
 jobs:
-  deploy-affect:
+  deploy-affected:
     strategy:
       matrix:
         runs-on: [ubuntu-latest]
@@ -22,7 +22,7 @@ jobs:
           BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "namespace=$(echo $BRANCH | sed 's/main/prd/;s/development/dev/')" >> $GITHUB_OUTPUT
-          echo "docker_url=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/" >> $GITHUB_OUTPUT
+          echo "docker_url=${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/" >> $GITHUB_OUTPUT
 
       - name: Checkout code into runner
         uses: actions/checkout@v4
@@ -38,6 +38,17 @@ jobs:
 
       - name: Authenticate Docker for GCP
         run: gcloud auth configure-docker
+
+      - name: Install pnpm ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ matrix.pnpm-version }}
+
+      - name: Install dependencies
+        run: pnpm install --workspace-root --frozen-lockfile
+
+      - name: Set affected SHAs
+        uses: nrwl/nx-set-shas@v4
 
       - name: Build Docker images for affected packages
         run: |

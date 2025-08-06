@@ -22,7 +22,7 @@ jobs:
           BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "namespace=$(echo $BRANCH | sed 's/main/prd/;s/development/dev/')" >> $GITHUB_OUTPUT
-          echo "docker_url=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/" >> $GITHUB_OUTPUT
+          echo "docker_url=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}" >> $GITHUB_OUTPUT
 
       - name: Checkout code into runner
         uses: actions/checkout@v4
@@ -52,12 +52,26 @@ jobs:
 
       - name: Build Docker images for affected packages
         run: |
-          DOCKER_URL="${{ steps.vars.outputs.docker_url }}"
-          IMAGE_NAME="${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
-          pnpm exec nx affected -t docker:build -- $DOCKER_URL $IMAGE_NAME
+          echo "Getting affected packages..."
+          packages=$(pnpm exec nx show projects --affected)
+
+          for pkg in $packages; do
+            clean_name=$(echo "$pkg" | sed 's/@bardsync\///')
+            FULL_PATH="${{ steps.vars.outputs.docker_url }}/$clean_name/$clean_name-${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
+
+            echo "Building image for $pkg > $FULL_PATH"
+            docker build -t "$FULL_PATH" "packages/$clean_name"
+          done
 
       - name: Push Docker images for affected packages
         run: |
-          DOCKER_URL="${{ steps.vars.outputs.docker_url }}"
-          IMAGE_NAME="${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
-          pnpm exec nx affected -t docker:push -- $DOCKER_URL $IMAGE_NAME
+          echo "Getting affected packages..."
+          packages=$(pnpm exec nx show projects --affected)
+
+          for pkg in $packages; do
+            clean_name=$(echo "$pkg" | sed 's/@bardsync\///')
+            FULL_PATH="${{ steps.vars.outputs.docker_url }}/$clean_name/$clean_name-${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
+
+            echo "Pushing image for $pkg > $FULL_PATH"
+            docker push "$FULL_PATH"
+          done

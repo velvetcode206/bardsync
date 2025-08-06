@@ -10,9 +10,7 @@
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "docker:build": "docker build -t \"$1/client/$2\" .",
-    "docker:push": "docker push \"$1/client/$2\""
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.7.1",

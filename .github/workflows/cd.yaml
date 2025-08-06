@@ -22,7 +22,7 @@ jobs:
           BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "namespace=$(echo $BRANCH | sed 's/main/prd/;s/development/dev/')" >> $GITHUB_OUTPUT
-          echo "docker_url=${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/" >> $GITHUB_OUTPUT
+          echo "docker_url=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/" >> $GITHUB_OUTPUT
 
       - name: Checkout code into runner
         uses: actions/checkout@v4

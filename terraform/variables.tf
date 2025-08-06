@@ -47,3 +47,8 @@ variable "ksa_namespace_development" {
   type        = string
   nullable    = false
 }
+
+variable "gcp_artifact_repo_client" {
+  type        = string
+  nullable    = false
+}

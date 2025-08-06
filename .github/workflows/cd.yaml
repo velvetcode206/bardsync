@@ -1,0 +1,52 @@
+name: Continuous Deployment Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - development
+
+jobs:
+  deploy-affect:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest]
+    runs-on: ${{ matrix.runs-on }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Set variables
+        id: vars
+        run: |
+          BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "namespace=$(echo $BRANCH | sed 's/main/prd/;s/development/dev/')" >> $GITHUB_OUTPUT
+          echo "docker_url=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/" >> $GITHUB_OUTPUT
+
+      - name: Checkout code into runner
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authenticate Docker for GCP
+        run: gcloud auth configure-docker
+
+      - name: Build Docker images for affected packages
+        run: |
+          DOCKER_URL="${{ steps.vars.outputs.docker_url }}"
+          IMAGE_NAME="${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
+          pnpm exec nx affected -t docker:build -- $DOCKER_URL $IMAGE_NAME
+
+      - name: Push Docker images for affected packages
+        run: |
+          DOCKER_URL="${{ steps.vars.outputs.docker_url }}"
+          IMAGE_NAME="${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
+          pnpm exec nx affected -t docker:push -- $DOCKER_URL $IMAGE_NAME

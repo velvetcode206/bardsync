@@ -84,6 +84,12 @@ resource "google_service_account" "sa_github_actions" {
   display_name = var.gcp_sa_github_actions_name
 }
 
+resource "google_project_iam_member" "artifact_registry_writer" {
+  project = var.gcp_project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.sa_github_actions.email}"
+}
+
 resource "google_service_account_iam_member" "workload_identity_github_actions" {
   service_account_id = google_service_account.sa_github_actions.name
   role               = "roles/iam.workloadIdentityUser"

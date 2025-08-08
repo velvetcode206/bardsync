@@ -17,6 +17,19 @@ resource "google_project_iam_member" "gke_nodes_artifact_registry_read" {
   member  = "serviceAccount:${google_service_account.gke_nodes.email}"
 }
 
+resource "google_project_iam_member" "gke_nodes_cluster_viewer" {
+  project = var.gcp_project_id
+  role    = "roles/container.clusterViewer"
+  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
+}
+
+resource "google_project_iam_member" "gke_nodes_container_developer" {
+  project = var.gcp_project_id
+  role    = "roles/container.developer"
+  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
+}
+
+
 resource "google_project_iam_member" "gke_nodes_logging" {
   project = var.gcp_project_id
   role    = "roles/logging.logWriter"

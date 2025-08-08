@@ -55,24 +55,35 @@ jobs:
           echo "Getting affected packages..."
           packages=$(pnpm exec nx show projects --affected)
 
-          for pkg in $packages; do
-            clean_name=$(echo "$pkg" | sed 's/@bardsync\///')
-            FULL_PATH="${{ steps.vars.outputs.docker_url }}/$clean_name/$clean_name-${{ steps.vars.outputs.namespace }}:${{ github.sha }}"
+          if [ -z $packages ]; then
+            echo "No affected packages found. Skipping build."
+          else
+            for pkg in $packages; do
+              CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')
+              FULL_PATH="${{ steps.vars.outputs.docker_url }}/$CLEAN_NAME/$CLEAN_NAME-${{ steps.vars.outputs.namespace }}"
 
-            echo "Building image for $pkg > $FULL_PATH"
-            docker build -t "$FULL_PATH" "packages/$clean_name"
-            docker tag "$FULL_PATH" "$FULL_PATH:latest"
-          done
+              echo "Building image for $pkg > $FULL_PATH"
+              docker build -t $FULL_PATH:${{ github.sha }} -t $FULL_PATH:latest packages/$CLEAN_NAME
+            done
+          fi
 
       - name: Push Docker images for affected packages
         run: |
           echo "Getting affected packages..."
           packages=$(pnpm exec nx show projects --affected)
 
-          for pkg in $packages; do
-            clean_name=$(echo "$pkg" | sed 's/@bardsync\///')
-            FULL_PATH="${{ steps.vars.outputs.docker_url }}/$clean_name/$clean_name-${{ steps.vars.outputs.namespace }}"
+          if [ -z $packages ]; then
+            echo "No affected packages found. Skipping build."
+          else
+            for pkg in $packages; do
+              CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')
+              FULL_PATH="${{ steps.vars.outputs.docker_url }}/$CLEAN_NAME/$CLEAN_NAME-${{ steps.vars.outputs.namespace }}"
 
-            echo "Pushing image for $pkg > $FULL_PATH"
-            docker push --all-tags "$FULL_PATH"
-          done
+              if ! docker image inspect $FULL_PATH:${{ github.sha }} > /dev/null 2>&1; then
+                echo "Image $FULL_PATH:${{ github.sha }} not found locally. Skipping push."
+              else
+                echo "Pushing image for $pkg > $FULL_PATH"
+                docker push --all-tags $FULL_PATH
+              fi
+            done
+          fi

@@ -83,7 +83,7 @@ jobs:
           packages=$(pnpm exec nx show projects --affected)
 
           if [ -z $packages ]; then
-            echo "No affected packages found. Skipping build."
+            echo "No affected packages found. Skipping push."
           else
             for pkg in $packages; do
               CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')

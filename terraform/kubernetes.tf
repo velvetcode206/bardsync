@@ -10,6 +10,10 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
+  gateway_api_config {
+    channel = "CHANNEL_STANDARD"
+  }
+
   workload_identity_config {
     workload_pool = "${var.gcp_project_id}.svc.id.goog"
   }
@@ -35,7 +39,8 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
-      "https://www.googleapis.com/auth/monitoring"
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/cloud-platform"
     ]
 
     metadata = {

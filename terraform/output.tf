@@ -8,6 +8,11 @@ output "gcp_region_and_zone" {
   value       = "${var.gcp_region} / ${var.gcp_region}"
 }
 
+output "gcp_global_address_gke_gateway" {
+  description = "GCloud GKE Gateway API"
+  value       = "Gateway IP: ${google_compute_global_address.gke_gateway.address}"
+}
+
 output "gcp_sa_gke_nodes" {
   description = "GCloud Service Account for GKE Nodes"
   value       = "${google_service_account.gke_nodes.email} / ${google_service_account.gke_nodes.member}"

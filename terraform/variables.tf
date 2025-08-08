@@ -43,6 +43,10 @@ variable "gcp_subnet_primary_range" {
   nullable    = false
 }
 
+variable "gcp_global_address_gke_gateway_name" {
+  type        = string
+  nullable    = false
+}
 
 # ARTIFACT REGISTRY
 

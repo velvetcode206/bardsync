@@ -8,9 +8,10 @@ gcp_region         = "<PROJECT_REGION>"
 gcp_zone           = "<PROJECT_ZONE>"
 
 # NETWORKING
-gcp_network_primary_name = "network-primary"
-gcp_subnet_primary_name  = "subnet-primary"
-gcp_subnet_primary_range = "10.10.0.0/24"
+gcp_network_primary_name            = "network-primary"
+gcp_subnet_primary_name             = "subnet-primary"
+gcp_subnet_primary_range            = "10.10.0.0/24"
+gcp_global_address_gke_gateway_name = "gke-gateway"
 
 # ARTIFACT REGISTRY
 gcp_artifact_repo_client_id          = "client"

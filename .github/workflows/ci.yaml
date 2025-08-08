@@ -22,17 +22,19 @@ jobs:
     steps:
       - name: Checkout code into runner
         uses: actions/checkout@v4
-
-      - name: Install pnpm ${{ matrix.pnpm-version }}
-        uses: pnpm/action-setup@v4
         with:
-          version: ${{ matrix.pnpm-version }}
+          fetch-depth: 0
 
       - name: Install Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
+
+      - name: Install pnpm ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ matrix.pnpm-version }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

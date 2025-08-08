@@ -69,6 +69,7 @@ It’s designed to create a shared audio experience, making it easy for groups t
 - [![github-actions][github-actions-shield]][github-actions-url]
 - [![terraform][terraform-shield]][terraform-url]
 - [![gcp][gcp-shield]][gcp-url]
+- [![docker][docker-shield]][docker-url]
 - [![nx][nx-shield]][nx-url]
 - [![node][node-shield]][node-url]
 - [![pnpm][pnpm-shield]][pnpm-url]
@@ -234,5 +235,7 @@ Distributed under the GNU General Public License v3.0. See [LICENSE][license-url
 [gcp-url]: https://cloud.google.com/
 [nuxt-shield]: https://img.shields.io/badge/nuxt4-web%20framework-000000?style=for-the-badge&logo=nuxt&logoColor=ffffff&labelColor=00DC82
 [nuxt-url]: https://nuxt.com/
+[docker-shield]: https://img.shields.io/badge/docker-containerization%20platform-000000?style=for-the-badge&logo=docker&logoColor=ffffff&labelColor=2496ED
+[docker-url]: https://docker.com/
 [choose-a-license-url]: https://choosealicense.com
 [shields-url]: https://shields.io

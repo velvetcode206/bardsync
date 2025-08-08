@@ -3,10 +3,11 @@ kind: Gateway
 metadata:
   name: gke-gateway
   namespace: ingress
-  annotations:
-    networking.gke.io/ip-address: 34.149.120.212
 spec:
   gatewayClassName: gke-l7-global-external-managed
+  addresses:
+    - type: NamedAddress
+      value: gke-gateway-ip
   listeners:
     - name: http
       protocol: HTTP

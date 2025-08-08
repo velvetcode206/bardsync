@@ -10,6 +10,8 @@ resource "google_compute_subnetwork" "primary" {
   network       = google_compute_network.primary.name
 }
 
-resource "google_compute_global_address" "gke_gateway" {
-  name = var.gcp_global_address_gke_gateway_name
+resource "google_compute_global_address" "gke_gateway_ip" {
+  name = var.gcp_global_address_gke_gateway_ip_name
+  address_type = "EXTERNAL"
+  ip_version  = "IPV4"
 }

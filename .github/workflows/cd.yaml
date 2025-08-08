@@ -43,6 +43,12 @@ jobs:
       - name: Authenticate Docker for GCP
         run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
 
+      - name: Set up GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_LOCATION }}
+
       - name: Install pnpm ${{ matrix.pnpm-version }}
         uses: pnpm/action-setup@v4
         with:
@@ -94,6 +100,33 @@ jobs:
               else
                 echo "Pushing image for $pkg > $FULL_PATH"
                 docker push --all-tags $FULL_PATH
+              fi
+            done
+          fi
+
+      - name: Deploy affected packages to Kubernetes
+        run: |
+          kubectl set image deployment/client client=us-east1-docker.pkg.dev/bardsync-467801/client/client-prd:${{ github.sha }} -n ${{ steps.vars.outputs.namespace }}
+          kubectl rollout status deployment/client -n ${{ steps.vars.outputs.namespace }}
+
+      - name: Deploy affected packages to GKE
+        run: |
+          echo "Getting affected packages..."
+          packages=$(pnpm exec nx show projects --affected)
+
+          if [ -z $packages ]; then
+            echo "No affected packages found. Skipping push."
+          else
+            for pkg in $packages; do
+              CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')
+              FULL_PATH="${{ steps.vars.outputs.docker_url }}/$CLEAN_NAME/$CLEAN_NAME-${{ steps.vars.outputs.namespace }}"
+
+              if ! docker image inspect $FULL_PATH:${{ github.sha }} > /dev/null 2>&1; then
+                echo "Image $FULL_PATH:${{ github.sha }} not found locally. Skipping deploy."
+              else
+                echo "Deploying package $pkg to GKE"
+                kubectl set image deployment/$CLEAN_NAME client=$FULL_PATH:${{ github.sha }} -n ${{ steps.vars.outputs.namespace }}
+                kubectl rollout status deployment/$CLEAN_NAME -n ${{ steps.vars.outputs.namespace }}
               fi
             done
           fi

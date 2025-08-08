@@ -43,8 +43,8 @@ spec:
   parentRefs:
     - name: gke-gateway
       namespace: ingress
-  hostnames:
-    - bardsync.com
+  # hostnames:
+  #   - bardsync.com
   rules:
     - matches:
         - path:

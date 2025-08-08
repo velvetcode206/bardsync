@@ -10,7 +10,7 @@ output "gcp_region_and_zone" {
 
 output "gcp_global_address_gke_gateway" {
   description = "GCloud GKE Gateway API"
-  value       = "Gateway IP: ${google_compute_global_address.gke_gateway.address}"
+  value       = "Gateway IP: ${google_compute_global_address.gke_gateway_ip.address}"
 }
 
 output "gcp_sa_gke_nodes" {

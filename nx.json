@@ -24,7 +24,8 @@
   },
   "namedInputs": {
     "sharedGlobals": [
-      "{workspaceRoot}/.github/workflows/ci.yml"
+      "{workspaceRoot}/.github/workflows/**/*.yaml",
+      "{workspaceRoot}/k8s/**/*.yaml"
     ],
     "default": [
       "sharedGlobals"

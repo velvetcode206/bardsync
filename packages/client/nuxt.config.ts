@@ -15,9 +15,9 @@ export default defineNuxtConfig({
           name: 'viewport',
           content: 'width=device-width, initial-scale=1.0',
         },
-        { name: 'description', content: 'This is a template Nuxt4 application' },
+        { name: 'description', content: 'Play sound effects and music in perfect sync, with everyone, everywhere.' },
       ],
-      title: 'Client',
+      title: 'Bardsync',
       link: [{
         rel: 'icon',
         type: 'image/x-icon',

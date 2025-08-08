@@ -17,7 +17,7 @@ export default defineNuxtConfig({
         },
         { name: 'description', content: 'Play sound effects and music in perfect sync, with everyone, everywhere.' },
       ],
-      title: 'Bardsync',
+      title: 'Bardsync!',
       link: [{
         rel: 'icon',
         type: 'image/x-icon',

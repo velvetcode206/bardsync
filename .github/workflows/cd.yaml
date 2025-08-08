@@ -104,11 +104,6 @@ jobs:
             done
           fi
 
-      - name: Deploy affected packages to Kubernetes
-        run: |
-          kubectl set image deployment/client client=us-east1-docker.pkg.dev/bardsync-467801/client/client-prd:${{ github.sha }} -n ${{ steps.vars.outputs.namespace }}
-          kubectl rollout status deployment/client -n ${{ steps.vars.outputs.namespace }}
-
       - name: Deploy affected packages to GKE
         run: |
           echo "Getting affected packages..."

@@ -12,14 +12,13 @@ permissions:
 
 env:
   GCP_REGION: ${{ secrets.GCP_REGION }}
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_LOCATION: ${{ secrets.GKE_LOCATION }}
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
   PACKAGE_PREFIX: '@bardsync/'
   NAMESPACE: ${{ github.ref_name == 'main' && 'prd' || github.ref_name == 'development' && 'dev' || github.ref_name }}
-  DOCKER_URL: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}
+  DOCKER_URL: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}
   COMMIT_SHA: ${{ github.sha }}
 
 concurrency:

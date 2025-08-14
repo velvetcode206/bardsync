@@ -11,14 +11,14 @@ permissions:
   id-token: write
 
 env:
-  GCP_REGION: ${{ secrets.GCP_REGION }}
-  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
-  GKE_LOCATION: ${{ secrets.GKE_LOCATION }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  GKE_CLUSTER: ${{ vars.GKE_CLUSTER }}
+  GKE_LOCATION: ${{ vars.GKE_LOCATION }}
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
   PACKAGE_PREFIX: '@bardsync/'
   NAMESPACE: ${{ github.ref_name == 'main' && 'prd' || github.ref_name == 'development' && 'dev' || github.ref_name }}
-  DOCKER_URL: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}
+  DOCKER_URL: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}
   COMMIT_SHA: ${{ github.sha }}
 
 concurrency:
@@ -73,7 +73,7 @@ jobs:
           echo "packages=$json_array" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Build and Push packages images
+    name: Build & Push & Deploy packages images
     needs: affected
     if: needs.affected.outputs.packages != '[]'
     strategy:

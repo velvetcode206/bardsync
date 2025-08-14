@@ -6,48 +6,42 @@ on:
       - main
       - development
 
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+  GKE_LOCATION: ${{ secrets.GKE_LOCATION }}
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+  PACKAGE_PREFIX: '@bardsync/'
+  NAMESPACE: ${{ github.ref_name == 'main' && 'prd' || github.ref_name == 'development' && 'dev' || github.ref_name }}
+  DOCKER_URL: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}
+  COMMIT_SHA: ${{ github.sha }}
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
-  deploy-affected:
+  affected:
+    name: Get affected packages
     strategy:
       matrix:
         runs-on: [ubuntu-latest]
         pnpm-version: [10.13.1]
         node-version: [22.17.0]
     runs-on: ${{ matrix.runs-on }}
-    permissions:
-      contents: read
-      id-token: write
+    outputs:
+      packages: ${{ steps.set-output.outputs.packages }}
     steps:
-      - name: Set variables
-        id: vars
-        run: |
-          BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
-          echo "namespace=$(echo $BRANCH | sed 's/main/prd/;s/development/dev/')" >> $GITHUB_OUTPUT
-          echo "docker_url=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}" >> $GITHUB_OUTPUT
-
       - name: Checkout code into runner
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Authenticate Docker for GCP
-        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
-
-      - name: Set up GKE credentials
-        uses: google-github-actions/get-gke-credentials@v2
-        with:
-          cluster_name: ${{ vars.GKE_CLUSTER }}
-          location: ${{ vars.GKE_LOCATION }}
 
       - name: Install pnpm ${{ matrix.pnpm-version }}
         uses: pnpm/action-setup@v4
@@ -63,65 +57,93 @@ jobs:
       - name: Install dependencies
         run: pnpm install --workspace-root --frozen-lockfile
 
-      - name: Set affected SHAs
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4
 
-      - name: Build Docker images for affected packages
+      - name: Get affected packages as JSON array
+        id: set-output
         run: |
-          echo "Getting affected packages..."
-          packages=$(pnpm exec nx show projects --affected)
-
-          if [ -z $packages ]; then
-            echo "No affected packages found. Skipping build."
-          else
-            for pkg in $packages; do
-              CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')
-              FULL_PATH="${{ steps.vars.outputs.docker_url }}/$CLEAN_NAME/$CLEAN_NAME-${{ steps.vars.outputs.namespace }}"
-
-              echo "Building image for $pkg > $FULL_PATH"
-              docker build -t $FULL_PATH:${{ github.sha }} -t $FULL_PATH:latest packages/$CLEAN_NAME
-            done
+          pkgs=$(pnpm exec nx show projects --affected || echo "")
+          if [[ -z "$pkgs" ]]; then
+            echo "No affected packages were found."
+            echo "packages=[]" >> $GITHUB_OUTPUT
+            exit 0
           fi
+          cleaned_pkgs=$(echo "$pkgs" | sed "s|^${{ env.PACKAGE_PREFIX }}||")
+          json_array=$(echo "$cleaned_pkgs" | jq -R -s -c 'split("\n")[:-1]')
+          echo "packages=$json_array" >> $GITHUB_OUTPUT
 
-      - name: Push Docker images for affected packages
+  deploy:
+    name: Build and Push packages images
+    needs: affected
+    if: needs.affected.outputs.packages != '[]'
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest]
+        package: ${{ fromJson(needs.affected.outputs.packages) }}
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - name: Checkout code into runner
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authenticate Docker for GCP
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Set up GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_LOCATION }}
+
+      - name: Build & Push Docker image
+        id: build-image
         run: |
-          echo "Getting affected packages..."
-          packages=$(pnpm exec nx show projects --affected)
+          CLEAN_NAME=${{ matrix.package }}
+          IMAGE_NAME="${{ env.DOCKER_URL }}/$CLEAN_NAME/$CLEAN_NAME-${{ env.NAMESPACE }}"
 
-          if [ -z $packages ]; then
-            echo "No affected packages found. Skipping push."
-          else
-            for pkg in $packages; do
-              CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')
-              FULL_PATH="${{ steps.vars.outputs.docker_url }}/$CLEAN_NAME/$CLEAN_NAME-${{ steps.vars.outputs.namespace }}"
+          echo "Building and pushing image for package $CLEAN_NAME > $IMAGE_NAME"
+          docker buildx create --use --driver docker-container
+          docker buildx build \
+            -f "packages/$CLEAN_NAME/Dockerfile" \
+            -t "$IMAGE_NAME:latest" \
+            -t "$IMAGE_NAME:${{ env.COMMIT_SHA }}" \
+            --push \
+            .
 
-              if ! docker image inspect $FULL_PATH:${{ github.sha }} > /dev/null 2>&1; then
-                echo "Image $FULL_PATH:${{ github.sha }} not found locally. Skipping push."
-              else
-                echo "Pushing image for $pkg > $FULL_PATH"
-                docker push --all-tags $FULL_PATH
-              fi
-            done
-          fi
+          echo "name-tagged=$IMAGE_NAME:${{ env.COMMIT_SHA }}" >> $GITHUB_OUTPUT
 
-      - name: Deploy affected packages to GKE
+      - name: Deploy image to GKE
         run: |
-          echo "Getting affected packages..."
-          packages=$(pnpm exec nx show projects --affected)
+          CLEAN_NAME=${{ matrix.package }}
+          IMAGE_NAME_TAGGED=${{ steps.build-image.outputs.name-tagged }}
 
-          if [ -z $packages ]; then
-            echo "No affected packages found. Skipping push."
-          else
-            for pkg in $packages; do
-              CLEAN_NAME=$(echo $pkg | sed 's/@bardsync\///')
-              FULL_PATH="${{ steps.vars.outputs.docker_url }}/$CLEAN_NAME/$CLEAN_NAME-${{ steps.vars.outputs.namespace }}"
-
-              if ! docker image inspect $FULL_PATH:${{ github.sha }} > /dev/null 2>&1; then
-                echo "Image $FULL_PATH:${{ github.sha }} not found locally. Skipping deploy."
-              else
-                echo "Deploying package $pkg to GKE"
-                kubectl set image deployment/$CLEAN_NAME client=$FULL_PATH:${{ github.sha }} -n ${{ steps.vars.outputs.namespace }}
-                kubectl rollout status deployment/$CLEAN_NAME -n ${{ steps.vars.outputs.namespace }}
-              fi
-            done
+          if ! docker buildx imagetools inspect $IMAGE_NAME_TAGGED; then
+            echo "No image found on the registry. Skipping deploy."
+            exit 1
           fi
+          echo "Deploying package $CLEAN_NAME to GKE"
+          kubectl set image deployment/$CLEAN_NAME client=$IMAGE_NAME_TAGGED -n ${{ env.NAMESPACE }}
+          for i in {1..3}; do
+            if kubectl rollout status deployment/$CLEAN_NAME -n ${{ env.NAMESPACE }}; then
+              echo "Deployment succeeded!"
+              break
+            else
+              echo "Rollout not complete, retrying ($i/3)..."
+              sleep 10
+            fi
+            if [ $i -eq 3 ]; then
+              echo "Deployment failed after retries"
+              exit 1
+            fi
+          done

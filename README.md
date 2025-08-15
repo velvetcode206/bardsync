@@ -17,6 +17,10 @@
     Play sound effects and music in perfect sync, with everyone, everywhere.
     <br />
     <br />
+    <a href="http://34.54.212.41/">
+        See live 🌐
+    </a>
+    &middot;
     <a href="https://github.com/velvetcode206/bardsync/issues/new?labels=bug&template=bug-report---.md">
         Report Bug
     </a>

@@ -5,7 +5,16 @@ resource "google_artifact_registry_repository" "client" {
   location      = var.gcp_region
 
   cleanup_policies {
-    id     = "keep-minimum"
+    id     = "keep-any-tagged"
+    action = "KEEP"
+
+    condition {
+      tag_state = "TAGGED"
+    }
+  }
+
+  cleanup_policies {
+    id     = "keep-only-recent"
     action = "KEEP"
 
     most_recent_versions {

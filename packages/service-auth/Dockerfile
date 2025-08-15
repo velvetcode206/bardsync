@@ -25,5 +25,5 @@ FROM eclipse-temurin:21-jdk-alpine AS runner
 WORKDIR /app
 COPY --from=builder /app/packages/service-auth/build/libs/*.jar ./app.jar
 
-EXPOSE 3000
+EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]

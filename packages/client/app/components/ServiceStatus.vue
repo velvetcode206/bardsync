@@ -13,8 +13,6 @@ const { data } = await useFetch('/api/services-status')
 
 <style scoped>
 .services-status {
-  position: absolute;
-  top: 32px;
   display: flex;
   flex-direction: column;
   gap: 8px;

@@ -132,7 +132,7 @@ jobs:
             exit 1
           fi
           echo "Deploying package $CLEAN_NAME to GKE"
-          kubectl set image deployment/$CLEAN_NAME client=$IMAGE_NAME_TAGGED -n ${{ env.NAMESPACE }}
+          kubectl set image deployment/$CLEAN_NAME $CLEAN_NAME=$IMAGE_NAME_TAGGED -n ${{ env.NAMESPACE }}
           for i in {1..3}; do
             if kubectl rollout status deployment/$CLEAN_NAME -n ${{ env.NAMESPACE }}; then
               echo "Deployment succeeded!"

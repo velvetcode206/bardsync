@@ -74,6 +74,7 @@ It’s designed to create a shared audio experience, making it easy for groups t
 - [![node][node-shield]][node-url]
 - [![pnpm][pnpm-shield]][pnpm-url]
 - [![nuxt][nuxt-shield]][nuxt-url]
+- [![gradle][gradle-shield]][gradle-url]
 
 <p align="right"><a href="#readme-top">⬆ back to top</a></p>
 
@@ -86,10 +87,14 @@ Follow these instructions to set the project locally.
 ### Prerequisites
 
 - pnpm is the default node package manager on the project
+
   ```sh
   npm install -g pnpm@10.13.1
   ```
+
   For other methods of installation on POSIX systems or Docker, refer to [PNPM documentation][pnpm-url]
+
+- Install Java Development Kit 21, necessary for the Java services
 
 ### Installation
 
@@ -237,5 +242,7 @@ Distributed under the GNU General Public License v3.0. See [LICENSE][license-url
 [nuxt-url]: https://nuxt.com/
 [docker-shield]: https://img.shields.io/badge/docker-containerization%20platform-000000?style=for-the-badge&logo=docker&logoColor=ffffff&labelColor=2496ED
 [docker-url]: https://docker.com/
+[gradle-shield]: https://img.shields.io/badge/gradle-java%20build%20system-000000?style=for-the-badge&logo=gradle&logoColor=ffffff&labelColor=02303A
+[gradle-url]: https://gradle.com/
 [choose-a-license-url]: https://choosealicense.com
 [shields-url]: https://shields.io

@@ -37,6 +37,11 @@ output "artifact_repository_client" {
   value       = "${google_artifact_registry_repository.client.name} / ${google_artifact_registry_repository.client.location}"
 }
 
+output "artifact_repository_service_auth" {
+  description = "GCloud Artifact Repository for the authentication service"
+  value       = "${google_artifact_registry_repository.service_auth.name} / ${google_artifact_registry_repository.service_auth.location}"
+}
+
 output "kubernetes_cluster_name" {
   description = "GCloud GKE Cluster Name"
   value       = google_container_cluster.primary.name

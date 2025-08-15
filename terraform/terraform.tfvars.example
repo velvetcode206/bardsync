@@ -14,9 +14,11 @@ gcp_subnet_primary_range               = "10.10.0.0/24"
 gcp_global_address_gke_gateway_ip_name = "gke-gateway-ip"
 
 # ARTIFACT REGISTRY
-gcp_artifact_repo_client_id          = "client"
-gcp_artifact_repo_client_description = "Image repository for the client app"
-gcp_artifact_repo_client_format      = "DOCKER"
+gcp_artifact_repo_format                   = "DOCKER"
+gcp_artifact_repo_client_id                = "client"
+gcp_artifact_repo_client_description       = "Image repository for the client app"
+gcp_artifact_repo_service_auth_id          = "service-auth"
+gcp_artifact_repo_service_auth_description = "Image repository for the authentication service"
 
 # KUBERNETES
 gcp_gke_cluster_name   = "cluster-primary"

@@ -50,6 +50,11 @@ variable "gcp_global_address_gke_gateway_ip_name" {
 
 # ARTIFACT REGISTRY
 
+variable "gcp_artifact_repo_format" {
+  type        = string
+  nullable    = false
+}
+
 variable "gcp_artifact_repo_client_id" {
   type        = string
   nullable    = false
@@ -60,10 +65,16 @@ variable "gcp_artifact_repo_client_description" {
   nullable    = false
 }
 
-variable "gcp_artifact_repo_client_format" {
+variable "gcp_artifact_repo_service_auth_id" {
   type        = string
   nullable    = false
 }
+
+variable "gcp_artifact_repo_service_auth_description" {
+  type        = string
+  nullable    = false
+}
+
 
 # KUBERNETES
 

@@ -12,6 +12,11 @@
         "build"
       ]
     },
+    "bootRun": {
+      "dependsOn": [
+        "build"
+      ]
+    },
     "lint": {
       "cache": true
     },
@@ -28,7 +33,22 @@
       "{workspaceRoot}/k8s/**/*.yaml"
     ],
     "default": [
-      "sharedGlobals"
+      "sharedGlobals",
+      "{projectRoot}/**/*"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/src/test/**/*"
     ]
-  }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/gradle",
+      "options": {
+        "testTargetName": "test",
+        "classesTargetName": "classes",
+        "buildTargetName": "build"
+      }
+    }
+  ]
 }

@@ -40,5 +40,6 @@
     "scss",
     "pcss",
     "postcss"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic"
 }

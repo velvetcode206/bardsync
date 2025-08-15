@@ -5,7 +5,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 WORKDIR /app
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json nx.json /app
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json nx.json tsconfig.base.json /app
 COPY packages/client /app/packages/client
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile

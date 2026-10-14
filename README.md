@@ -17,7 +17,7 @@
     Play sound effects and music in perfect sync, with everyone, everywhere.
     <br />
     <br />
-    <a href="http://34.54.212.41/">
+    <a href="https://bardsync.pages.dev/">
         See live 🌐
     </a>
     &middot;
@@ -71,14 +71,10 @@ It’s designed to create a shared audio experience, making it easy for groups t
 
 - [![github][github-shield]][github-url]
 - [![github-actions][github-actions-shield]][github-actions-url]
-- [![terraform][terraform-shield]][terraform-url]
-- [![gcp][gcp-shield]][gcp-url]
-- [![docker][docker-shield]][docker-url]
-- [![nx][nx-shield]][nx-url]
+- [![cloudflare][cloudflare-shield]][cloudflare-url]
 - [![node][node-shield]][node-url]
 - [![pnpm][pnpm-shield]][pnpm-url]
 - [![nuxt][nuxt-shield]][nuxt-url]
-- [![gradle][gradle-shield]][gradle-url]
 
 <p align="right"><a href="#readme-top">⬆ back to top</a></p>
 
@@ -93,12 +89,10 @@ Follow these instructions to set the project locally.
 - pnpm is the default node package manager on the project
 
   ```sh
-  npm install -g pnpm@10.13.1
+  npm install -g pnpm@12.4.2
   ```
 
   For other methods of installation on POSIX systems or Docker, refer to [PNPM documentation][pnpm-url]
-
-- Install Java Development Kit 21, necessary for the Java services
 
 ### Installation
 
@@ -113,10 +107,10 @@ Follow these instructions to set the project locally.
 
 ### Usage
 
-- Running scripts are done primarly by `Nx`, using the CLI syntax `nx run [package]:[script]`.
-  - eg. `nx run @bardsync/client:dev`
-- Scripts can also be run manually on each package depending on the tooling/framework used.
-  - **Dependant targets won't work when running scripts manually.**
+- Running scripts are done primarly by `pnpm run` instead of `npm run`.
+  - eg. `pnpm run dev`
+- The commits use the commitizen and commitlint, to make use of the CLI tool try `pnpm commit`
+  - If commit linting is undesired, comment the verification in the `.husky/commit-msg` file.
 
 ### Caveats
 
@@ -186,7 +180,7 @@ Contributions help make open source awesome. Feel free to fork the repo and subm
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/CoolFeature`)
-3. Commit your changes (`git commit -m 'Add some CoolFeature'`)
+3. Commit your changes (`git commit -m 'feat: add some CoolFeature'`)
 4. Push to the branch (`git push origin feature/CoolFeature`)
 5. Open a pull request
 
@@ -214,6 +208,7 @@ Distributed under the GNU General Public License v3.0. See [LICENSE][license-url
 
 - [Choose an Open Source License][choose-a-license-url]
 - [Readme Shields][shields-url]
+
 <p align="right"><a href="#readme-top">⬆ back to top</a></p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
@@ -232,21 +227,13 @@ Distributed under the GNU General Public License v3.0. See [LICENSE][license-url
 [github-url]: https://docs.github.com/en/actions/
 [github-actions-shield]: https://img.shields.io/badge/github%20actions-ci/cd%20pipeline-000000?style=for-the-badge&logo=githubactions&logoColor=ffffff&labelColor=2088FF
 [github-actions-url]: https://docs.github.com/en/actions/
-[nx-shield]: https://img.shields.io/badge/nx-build%20platform-000000?style=for-the-badge&logo=nx&logoColor=ffffff&labelColor=143055
-[nx-url]: https://nx.dev/
 [node-shield]: https://img.shields.io/badge/node-javascript%20runtime%20environment-000000?style=for-the-badge&logo=nodedotjs&logoColor=ffffff&labelColor=5FA04E
 [node-url]: https://pnpm.io/installation/
 [pnpm-shield]: https://img.shields.io/badge/pnpm-node%20package%20manager-000000?style=for-the-badge&logo=pnpm&logoColor=ffffff&labelColor=f69220
 [pnpm-url]: https://pnpm.io/installation/
-[terraform-shield]: https://img.shields.io/badge/terraform-infrastructure%20as%20code-000000?style=for-the-badge&logo=terraform&logoColor=ffffff&labelColor=844FBA
-[terraform-url]: https://developer.hashicorp.com/terraform
-[gcp-shield]: https://img.shields.io/badge/google%20cloud-cloud%20provider-000000?style=for-the-badge&logo=googlecloud&logoColor=ffffff&labelColor=4285F4
-[gcp-url]: https://cloud.google.com/
+[cloudflare-shield]: https://img.shields.io/badge/Clouflare-cloud%20provider-000000?style=for-the-badge&logo=cloudflare&logoColor=ffffff&labelColor=F38020
+[cloudflare-url]: https://www.cloudflare.com/
 [nuxt-shield]: https://img.shields.io/badge/nuxt4-web%20framework-000000?style=for-the-badge&logo=nuxt&logoColor=ffffff&labelColor=00DC82
 [nuxt-url]: https://nuxt.com/
-[docker-shield]: https://img.shields.io/badge/docker-containerization%20platform-000000?style=for-the-badge&logo=docker&logoColor=ffffff&labelColor=2496ED
-[docker-url]: https://docker.com/
-[gradle-shield]: https://img.shields.io/badge/gradle-java%20build%20system-000000?style=for-the-badge&logo=gradle&logoColor=ffffff&labelColor=02303A
-[gradle-url]: https://gradle.com/
 [choose-a-license-url]: https://choosealicense.com
 [shields-url]: https://shields.io

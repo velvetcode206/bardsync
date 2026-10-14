@@ -1,0 +1,15 @@
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply text-primary bg-secondary font-roboto;
+}
+
+/* Fixes @nuxt/icon bottom margin */
+.iconify {
+  vertical-align: middle;
+}
+
+.page {
+  @apply flex flex-col;
+}

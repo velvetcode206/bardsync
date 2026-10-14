@@ -6,5 +6,5 @@ if ! git log -1 --pretty=%G? | grep -qE 'G|U'; then
   exit 1
 fi
 
-# 2. Run Commitlint
-npx --no -- commitlint --edit "$1"
+# 1. Run Commitlint
+pnpm commitlint --edit $1

@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('~/assets/fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
+  font-optical-sizing: auto;
+  font-weight: 100 900;
+  font-style: normal;
+  font-variation-settings: 'wdth' 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('~/assets/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+  font-optical-sizing: auto;
+  font-weight: 100 900;
+  font-style: italic;
+  font-variation-settings: 'wdth' 100;
+  font-display: swap;
+}

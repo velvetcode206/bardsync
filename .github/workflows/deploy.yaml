@@ -43,13 +43,18 @@ jobs:
       - name: Build project
         run: pnpm build
 
-      - name: Deploy to Cloudflare Pages
+      - name: Setup worker name
+        run: |
+          BRANCH="${GITHUB_REF_NAME,,}"
+          echo "WORKER_NAME=${{ github.event.repository.name }}-${BRANCH//[^a-z0-9]/-}" | cut -c1-63 >> "$GITHUB_ENV"
+
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         id: cloudflare-deploy
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist --project-name="${{ github.event.repository.name }}" --branch="${{ github.ref_name }}"
+          command: deploy --name="${{ env.WORKER_NAME }}"
 
       - name: Create GitHub deployment
         id: github-deploy
@@ -85,5 +90,5 @@ jobs:
               deployment_id: Number(deploymentId),
               state: "success",
               environment_url: url,
-              description: "Cloudflare Pages deployment"
+              description: "Cloudflare Workers deployment"
             });

@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite'
 import { createResolver } from 'nuxt/kit'
 
 const { resolve } = createResolver(import.meta.url)
@@ -6,6 +7,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   nitro: { preset: 'cloudflare-pages' },
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+  },
   app: {
     head: {
       htmlAttrs: {
@@ -43,7 +49,6 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxtjs/i18n',
-    '@nuxtjs/tailwindcss',
     '@nuxt/icon',
     '@vueuse/nuxt',
     '@nuxtjs/sitemap',
@@ -67,7 +72,6 @@ export default defineNuxtConfig({
       },
     ],
   },
-  tailwindcss: {},
   icon: {
     provider: 'server',
     customCollections: [

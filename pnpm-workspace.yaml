@@ -1,10 +1,8 @@
 shellEmulator: true
 allowBuilds:
-  '@parcel/watcher': true
   esbuild: true
   sharp: true
   unrs-resolver: true
-  workerd: true
 supportedArchitectures:
   cpu:
     - current
@@ -16,6 +14,5 @@ supportedArchitectures:
 trustPolicy: no-downgrade
 
 trustPolicyExclude:
-  - semver
-  - chokidar
-  - undici
+  - seroval@1.7.2
+  - semver@6.3.1

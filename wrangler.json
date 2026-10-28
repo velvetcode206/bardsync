@@ -43,7 +43,7 @@
       ]
     }
   },
-  "main": "index.mjs",
+  "main": ".output/server/index.mjs",
   "assets": {
     "binding": "ASSETS",
     "directory": "../public"

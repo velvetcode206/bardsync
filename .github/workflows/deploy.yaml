@@ -12,20 +12,19 @@ permissions:
   contents: read
 
 env:
-  # Computed values
   D1_DATABASE: ${{ github.ref == 'refs/heads/main' && 'bardsync-production' || 'bardsync-development' }}
   CLOUDFLARE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
 jobs:
   deploy:
-    name: Apply DB migrations and Deploy Workers
+    name: Apply Migrations and Deploy Workers
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22]
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-      url: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
+      url: ${{ steps.worker-deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
@@ -34,7 +33,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -43,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply migrations to Cloudflare D1
+      - name: Apply migrations
         run: pnpm exec wrangler d1 migrations apply "$D1_DATABASE" --remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -52,9 +51,10 @@ jobs:
       - name: Build project
         run: pnpm build
 
-      - name: Deploy to Cloudflare Workers
-        id: cloudflare-deploy
-        run: pnpm exec wrangler deploy --env "$CLOUDFLARE_ENV"
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy worker
+        id: worker-deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env "$CLOUDFLARE_ENV"

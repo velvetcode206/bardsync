@@ -17,7 +17,7 @@ env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   # Computed values
   D1_DATABASE: ${{ github.ref == 'refs/heads/main' && 'bardsync-production' || 'bardsync-development' }}
-  CLOUDFLARE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || '' }}
+  CLOUDFLARE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
 jobs:
   deploy:
@@ -62,4 +62,4 @@ jobs:
         id: cloudflare-deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          command: deploy --name="${{ env.WORKER_NAME }}"
+          command: deploy --name="${{ env.WORKER_NAME }}" --env "$CLOUDFLARE_ENV"

@@ -12,9 +12,6 @@ permissions:
   contents: read
 
 env:
-  # Access secrets
-  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   # Computed values
   D1_DATABASE: ${{ github.ref == 'refs/heads/main' && 'bardsync-production' || 'bardsync-development' }}
   CLOUDFLARE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
@@ -46,8 +43,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply D1 migrations
+      - name: Apply migrations to Cloudflare D1
         run: pnpm exec wrangler d1 migrations apply "$D1_DATABASE" --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Build project
         run: pnpm build
@@ -58,19 +58,9 @@ jobs:
           NAME="${NAME//[^a-z0-9]/-}"
           echo "WORKER_NAME=${NAME:0:63}" >> "$GITHUB_ENV"
 
-      - name: Verify Cloudflare credentials are present
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "Token is missing"
-            exit 1
-          fi
-          echo "Token is present"
-
       - name: Deploy to Cloudflare Workers
         id: cloudflare-deploy
-        uses: cloudflare/wrangler-action@v3
+        run: pnpm exec wrangler deploy --name="${{ env.WORKER_NAME }}" --env "$CLOUDFLARE_ENV"
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        with:
-          command: deploy --config .output/server/wrangler.json --name="${{ env.WORKER_NAME }}"
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

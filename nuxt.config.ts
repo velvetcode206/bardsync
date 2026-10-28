@@ -12,6 +12,7 @@ export default defineNuxtConfig({
       deployConfig: true,
       nodeCompat: true,
     },
+    cloudflareDev: { environment: process.env.CF_ENV },
   },
   vite: {
     plugins: [
@@ -60,6 +61,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
     '@pinia/nuxt',
+    'nitro-cloudflare-dev',
   ],
   eslint: { config: { standalone: false } },
   image: { dir: 'assets/images', quality: 80 },

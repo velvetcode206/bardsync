@@ -1,14 +1,12 @@
-export default defineEventHandler(async (_event) => {
+import { usersTable } from '../db/schema'
+import { useDB } from '../utils/db'
+
+export default defineEventHandler(async (event) => {
   try {
-    const users = [{
-      id: '1',
-      name: 'Jon Doe',
-      email: 'jondoe@emai.coim',
-    }]
-    return { users }
+    const db = useDB(event)
+    return await db.select().from(usersTable)
   }
   catch (error) {
-    console.error('Failed to query users:', error)
-    return { error: 'Could not query users yet.', users: [] }
+    throw createError({ statusCode: 500, statusMessage: `Failed to fetch users. ${error}` })
   }
 })

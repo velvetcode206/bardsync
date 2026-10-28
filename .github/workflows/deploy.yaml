@@ -10,19 +10,25 @@ concurrency:
 
 permissions:
   contents: read
-  deployments: write
+
+env:
+  # Access secrets
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  # Computed values
+  D1_DATABASE: ${{ github.ref == 'refs/heads/main' && 'bardsync-production' || 'bardsync-development' }}
+  CLOUDFLARE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || '' }}
 
 jobs:
   deploy:
     name: Deploy app to cloudflare
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [22] # Only one, so it doesn't run multiple times
-
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        node-version: [22]
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+      url: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
@@ -41,62 +47,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Apply D1 migrations
-        uses: cloudflare/wrangler-action@v3
-        with:
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: >-
-            d1 migrations apply ${{ github.ref == 'refs/heads/main' && 'bardsync-production --env production' || 'bardsync-development' }} --remote
+        run: pnpm exec wrangler d1 migrations apply "$D1_DATABASE" --remote
 
       - name: Build project
         run: pnpm build
 
       - name: Setup worker name
         run: |
-          BRANCH="${GITHUB_REF_NAME,,}"
-          echo "WORKER_NAME=${{ github.event.repository.name }}-${BRANCH//[^a-z0-9]/-}" | cut -c1-63 >> "$GITHUB_ENV"
+          NAME="${GITHUB_REPOSITORY#*/}-${GITHUB_REF_NAME,,}"
+          NAME="${NAME//[^a-z0-9]/-}"
+          echo "WORKER_NAME=${NAME:0:63}" >> "$GITHUB_ENV"
 
       - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
         id: cloudflare-deploy
+        uses: cloudflare/wrangler-action@v3
         with:
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --name="${{ env.WORKER_NAME }}"
-
-      - name: Create GitHub deployment
-        id: github-deploy
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const env = "${{ github.ref_name == 'main' && 'production' || 'development' }}";
-
-            const res = await github.rest.repos.createDeployment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.sha,
-              environment: env,
-              auto_merge: false,
-              required_contexts: []
-            });
-
-            return res.data.id;
-
-      - name: Set deployment status with URL
-        uses: actions/github-script@v7
-        env:
-          DEPLOYMENT_ID: ${{ steps.github-deploy.outputs.result }}
-          URL: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
-        with:
-          script: |
-            const deploymentId = process.env.DEPLOYMENT_ID;
-            const url = process.env.URL;
-
-            await github.rest.repos.createDeploymentStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              deployment_id: Number(deploymentId),
-              state: "success",
-              environment_url: url,
-              description: "Cloudflare Workers deployment"
-            });

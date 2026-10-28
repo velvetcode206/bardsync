@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       deployConfig: true,
       nodeCompat: true,
     },
-    cloudflareDev: { environment: process.env.CF_ENV },
+    cloudflareDev: { environment: process.env.CLOUDFLARE_ENV },
   },
   vite: {
     plugins: [

@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+zero=0000000000000000000000000000000000000000
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Skip branch deletions
+  [ "$local_sha" = "$zero" ] && continue
+
+  if [ "$remote_sha" = "$zero" ]; then
+    # New branch: check commits not already on any remote
+    commits=$(git rev-list "$local_sha" --not --remotes)
+  else
+    commits=$(git rev-list "$remote_sha..$local_sha")
+  fi
+
+  for commit in $commits; do
+    # Merge commits from GitHub are signed by GitHub; local ones need a signature
+    if ! git cat-file commit "$commit" | grep -q '^gpgsig'; then
+      echo "❌ Commit $(git rev-parse --short "$commit") is not signed."
+      echo ""
+      echo "Fix the last commit:  git commit --amend --no-edit -S"
+      echo "Fix several commits:  git rebase --exec 'git commit --amend --no-edit -n -S' -i origin/main"
+      exit 1
+    fi
+  done
+done

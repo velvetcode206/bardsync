@@ -1,3 +1,12 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-roboto: Roboto, sans-serif;
+  --color-primary: #222222;
+  --color-secondary: #eeeeee;
+  --color-accent: #7b3fb2;
+}
+
 html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

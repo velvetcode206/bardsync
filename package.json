@@ -9,14 +9,23 @@
   },
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --host",
+    "dev": "nuxt dev",
+    "dev:remote": "CLOUDFLARE_ENV=remote nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prepare": "husky",
     "commit": "cz",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "typecheck": "wrangler types server/types/worker-configuration.d.ts && nuxt typecheck",
+    "db:generate": "drizzle-kit generate",
+    "db:pull": "drizzle-kit pull",
+    "db:studio:local": "drizzle-kit studio --config=drizzle.local.config.ts",
+    "db:studio:remote": "drizzle-kit studio",
+    "db:generate:custom": "drizzle-kit generate --custom",
+    "db:migrate:local": "wrangler d1 migrations apply bardsync-development --local",
+    "db:migrate:remote": "wrangler d1 migrations apply bardsync-development --remote"
   },
   "dependencies": {
     "@nuxt/icon": "2.2.2",
@@ -26,10 +35,12 @@
     "@nuxtjs/sitemap": "8.0.15",
     "@pinia/nuxt": "0.11.3",
     "@vueuse/nuxt": "14.3.0",
-    "nuxt": "^4.4.2",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "1.0.0-rc.5",
+    "nuxt": "^4.6.2",
     "pinia": "^3.0.4",
-    "vue": "^3.5.30",
-    "vue-router": "^5.0.3"
+    "vue": "^3.5.44",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",
@@ -37,17 +48,28 @@
     "@commitlint/config-conventional": "^20.5.0",
     "@intlify/eslint-plugin-vue-i18n": "^4.5.1",
     "@nuxt/eslint": "1.15.2",
-    "@nuxtjs/tailwindcss": "^6.14.0",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/github": "^12.0.6",
     "@semantic-release/release-notes-generator": "^14.1.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.5",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
+    "drizzle-kit": "1.0.0-rc.5",
     "eslint": "^10.0.3",
     "eslint-plugin-format": "^2.0.1",
     "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "nitro-cloudflare-dev": "^0.2.2",
     "semantic-release": "^25.0.3",
-    "typescript": "^5.9.3"
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.13",
+    "wrangler": "^4.152.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,mjs,cjs,vue,json,md,yml,yaml}": "eslint . --fix"
   },
   "config": {
     "commitizen": {

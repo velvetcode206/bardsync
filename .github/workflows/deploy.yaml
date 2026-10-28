@@ -2,27 +2,30 @@ name: Deploy
 
 on:
   push:
-    branches: [develop, main]
+    branches: [development, main]
 
 concurrency:
-  group: cloudflare-pages-production
-  cancel-in-progress: true
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
-  deployments: write
+
+env:
+  # Computed values
+  D1_DATABASE: ${{ github.ref == 'refs/heads/main' && 'bardsync-production' || 'bardsync-development' }}
+  CLOUDFLARE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
 jobs:
   deploy:
-    name: Deploy app to cloudflare
-
+    name: Apply DB migrations and Deploy Workers
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [22] # Only one, so it doesn't run multiple times
-
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        node-version: [22]
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+      url: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
@@ -40,50 +43,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Apply migrations to Cloudflare D1
+        run: pnpm exec wrangler d1 migrations apply "$D1_DATABASE" --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Build project
         run: pnpm build
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - name: Deploy to Cloudflare Workers
         id: cloudflare-deploy
-        with:
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist --project-name="${{ github.event.repository.name }}" --branch="${{ github.ref_name }}"
-
-      - name: Create GitHub deployment
-        id: github-deploy
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const env = "${{ github.ref_name == 'main' && 'production' || 'development' }}";
-
-            const res = await github.rest.repos.createDeployment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.sha,
-              environment: env,
-              auto_merge: false,
-              required_contexts: []
-            });
-
-            return res.data.id;
-
-      - name: Set deployment status with URL
-        uses: actions/github-script@v7
+        run: pnpm exec wrangler deploy --env "$CLOUDFLARE_ENV"
         env:
-          DEPLOYMENT_ID: ${{ steps.github-deploy.outputs.result }}
-          URL: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
-        with:
-          script: |
-            const deploymentId = process.env.DEPLOYMENT_ID;
-            const url = process.env.URL;
-
-            await github.rest.repos.createDeploymentStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              deployment_id: Number(deploymentId),
-              state: "success",
-              environment_url: url,
-              description: "Cloudflare Pages deployment"
-            });
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

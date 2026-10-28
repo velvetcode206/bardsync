@@ -1,10 +1,20 @@
 #!/usr/bin/env sh
 
-# 1. Check if the commit is signed (GPG or SSH)
-if ! git log -1 --pretty=%G? | grep -qE 'G|U'; then
-  echo "❌ Commit is not signed! Please sign your commit using GPG or SSH."
+# 1. Make sure commit signing is enabled before the commit is created
+if [ "$(git config --get commit.gpgsign)" != "true" ]; then
+  echo "❌ Commit signing is not enabled."
+  echo ""
+  echo "This repo requires signed commits. Set it up with:"
+  echo "  git config --global commit.gpgsign true"
+  echo ""
+  echo "GPG:  git config --global user.signingkey <KEY_ID>"
+  echo "SSH:  git config --global gpg.format ssh"
+  echo "      git config --global user.signingkey ~/.ssh/id_ed25519.pub"
+  echo ""
+  echo "Then add the key to GitHub (Settings → SSH and GPG keys)."
+  echo "For SSH, add it as a *Signing Key*."
   exit 1
 fi
 
 # 2. Run Commitlint
-pnpm commitlint --edit $1
+pnpm commitlint --edit "$1"

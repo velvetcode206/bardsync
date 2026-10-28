@@ -62,4 +62,4 @@ jobs:
         id: cloudflare-deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          command: deploy --name="${{ env.WORKER_NAME }}" --env "$CLOUDFLARE_ENV"
+          command: deploy --config .output/server/wrangler.json --name="${{ env.WORKER_NAME }}"

@@ -2,11 +2,11 @@ name: Deploy
 
 on:
   push:
-    branches: [develop, main]
+    branches: [development, main]
 
 concurrency:
-  group: cloudflare-pages-production
-  cancel-in-progress: true
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -39,6 +39,14 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Apply D1 migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: >-
+            d1 migrations apply ${{ github.ref == 'refs/heads/main' && 'bardsync-production --env production' || 'bardsync-development' }} --remote
 
       - name: Build project
         run: pnpm build

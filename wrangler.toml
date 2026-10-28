@@ -1,0 +1,34 @@
+name = "bardsync"
+compatibility_date = "2025-05-15"
+compatibility_flags = [ "nodejs_compat" ]
+
+# Local Development (Default)
+[[d1_databases]]
+binding = "DB"
+database_name = "bardsync-development"
+database_id = "ee4cd74f-1f07-4a3b-b798-5c9798de1b01"
+migrations_dir = "migrations"
+migrations_pattern = "migrations/*/migration.sql"
+
+# Remote Development
+[env.remote]
+name = "bardsync"
+
+[[env.remote.d1_databases]]
+binding = "DB"
+database_name = "bardsync-development"
+database_id = "ee4cd74f-1f07-4a3b-b798-5c9798de1b01"
+migrations_dir = "migrations"
+migrations_pattern = "migrations/*/migration.sql"
+remote = true
+
+# Production
+[env.production]
+name = "bardsync"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "bardsync-production"
+database_id = "f52f7bab-d6ae-4742-ba54-946c42466eef"
+migrations_dir = "migrations"
+migrations_pattern = "migrations/*/migration.sql"

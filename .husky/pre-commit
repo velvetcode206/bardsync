@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 # 1. Run lint fix
-pnpm lint:fix
+pnpm exec lint-staged

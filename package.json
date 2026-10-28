@@ -10,7 +10,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "dev:remote": "CLOUDFLARE_ENV=remote nuxt dev",
+    "dev:remote": "CLOUDFLARE_ENV=development nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

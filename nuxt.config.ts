@@ -9,10 +9,9 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare-module',
     cloudflare: {
-      deployConfig: true,
+      deployConfig: false,
       nodeCompat: true,
     },
-    cloudflareDev: { environment: process.env.CLOUDFLARE_ENV },
   },
   vite: {
     plugins: [

@@ -10,7 +10,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "dev:remote": "CLOUDFLARE_ENV=remote nuxt dev",
+    "dev:remote": "CLOUDFLARE_ENV=development nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -19,13 +19,14 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "wrangler types server/types/worker-configuration.d.ts && nuxt typecheck",
-    "db:generate": "drizzle-kit generate",
     "db:pull": "drizzle-kit pull",
+    "db:generate": "drizzle-kit generate",
+    "db:generate:custom": "drizzle-kit generate --custom",
     "db:studio:local": "drizzle-kit studio --config=drizzle.local.config.ts",
     "db:studio:remote": "drizzle-kit studio",
-    "db:generate:custom": "drizzle-kit generate --custom",
     "db:migrate:local": "wrangler d1 migrations apply bardsync-development --local",
-    "db:migrate:remote": "wrangler d1 migrations apply bardsync-development --remote"
+    "db:migrate:remote": "wrangler d1 migrations apply bardsync-development --remote",
+    "auth:generate": "pnpm dlx auth@latest generate --config auth.config.ts --output server/db/auth-schema.ts"
   },
   "dependencies": {
     "@nuxt/icon": "2.2.2",
@@ -35,6 +36,7 @@
     "@nuxtjs/sitemap": "8.0.15",
     "@pinia/nuxt": "0.11.3",
     "@vueuse/nuxt": "14.3.0",
+    "better-auth": "^1.7.14",
     "dotenv": "^17.4.2",
     "drizzle-orm": "1.0.0-rc.5",
     "nuxt": "^4.6.2",

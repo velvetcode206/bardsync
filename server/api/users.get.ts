@@ -1,5 +1,4 @@
 import { usersTable } from '../db/schema'
-import { useDB } from '../utils/db'
 
 export default defineEventHandler(async (event) => {
   try {
